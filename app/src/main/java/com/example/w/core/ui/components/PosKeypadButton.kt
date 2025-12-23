@@ -17,12 +17,14 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.example.w.ui.theme.SFPro
+
 @Composable
 fun PosKeypadButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    shape: Shape = CircleShape,
+    shape: Shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
     backgroundColor: Color = Color.Transparent,
     contentColor: Color = Color.White,
     fontSize: TextUnit = 32.sp
@@ -36,12 +38,17 @@ fun PosKeypadButton(
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
         ) {
             Text(
                 text = text,
                 fontSize = fontSize,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = (-0.25).sp,
+                fontFamily = SFPro,
+                style = androidx.compose.ui.text.TextStyle(fontFeatureSettings = "tnum,lnum")
             )
         }
     }

@@ -22,8 +22,8 @@ fun PosActionButton(
     enabled: Boolean = true,
     containerColor: Color = Color.White,
     contentColor: Color = Color.Black,
-    disabledContainerColor: Color = Color(0xFF4A4A4A),
-    disabledContentColor: Color = Color(0xFF8C8C8C)
+    disabledContainerColor: Color = Color(0xFFBDBDBD),
+    disabledContentColor: Color = Color(0xFF2F2F2F)
 ) {
     Button(
         onClick = onClick,
@@ -31,7 +31,7 @@ fun PosActionButton(
             .fillMaxWidth()
             .height(64.dp),
         enabled = enabled,
-        shape = RoundedCornerShape(percent = 50),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,

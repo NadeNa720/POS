@@ -85,81 +85,83 @@ fun ChargeScreen(
                 Text(
                     text = viewModel.formatAmount(state.amountCents),
                     fontSize = 48.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
-                    color = Color.White
+                    letterSpacing = (-0.25).sp,
+                    fontFamily = com.example.w.ui.theme.SFPro,
+                    color = if (state.amountCents == 0L) Color(0xFF9A9A9A) else Color.White,
+                    style = androidx.compose.ui.text.TextStyle(fontFeatureSettings = "tnum,lnum")
                 )
             }
 
-            // Keypad Area
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Keypad Area — контейнер «поле» ближе к краям и с меньшим скруглением
+            androidx.compose.material3.Surface(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                color = Color(0xFF262626),
+                contentColor = Color.White
             ) {
-                val buttonModifier = Modifier.weight(1f)
-
-                // Row 1
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    KeypadDigit(1, viewModel, buttonModifier)
-                    KeypadDigit(2, viewModel, buttonModifier)
-                    KeypadDigit(3, viewModel, buttonModifier)
-                }
+                    val buttonModifier = Modifier
+                        .weight(1f)
+                        .height(60.dp)
 
-                // Row 2
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    KeypadDigit(4, viewModel, buttonModifier)
-                    KeypadDigit(5, viewModel, buttonModifier)
-                    KeypadDigit(6, viewModel, buttonModifier)
-                }
-
-                // Row 3
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    KeypadDigit(7, viewModel, buttonModifier)
-                    KeypadDigit(8, viewModel, buttonModifier)
-                    KeypadDigit(9, viewModel, buttonModifier)
-                }
-
-                // Row 4
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Clear Button (C)
-                    PosKeypadButton(
-                        text = "C",
-                        onClick = { viewModel.onEvent(ChargeEvent.Clear) },
-                        modifier = buttonModifier
-                    )
-                    
-                    // 0 Button
-                    KeypadDigit(0, viewModel, buttonModifier)
-                    
-                    // Backspace Button
-                    PosKeypadButton(
-                        text = "⌫", // Or use a proper icon if possible, but unicode works for now
-                        onClick = { viewModel.onEvent(ChargeEvent.DeleteLast) },
-                        modifier = buttonModifier // Consider using an Icon here in real app
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        KeypadDigit(1, viewModel, buttonModifier)
+                        KeypadDigit(2, viewModel, buttonModifier)
+                        KeypadDigit(3, viewModel, buttonModifier)
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        KeypadDigit(4, viewModel, buttonModifier)
+                        KeypadDigit(5, viewModel, buttonModifier)
+                        KeypadDigit(6, viewModel, buttonModifier)
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        KeypadDigit(7, viewModel, buttonModifier)
+                        KeypadDigit(8, viewModel, buttonModifier)
+                        KeypadDigit(9, viewModel, buttonModifier)
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        PosKeypadButton(
+                            text = "C",
+                            onClick = { viewModel.onEvent(ChargeEvent.Clear) },
+                            modifier = buttonModifier
+                        )
+                        KeypadDigit(0, viewModel, buttonModifier)
+                        PosKeypadButton(
+                            text = "⌫",
+                            onClick = { viewModel.onEvent(ChargeEvent.DeleteLast) },
+                            modifier = buttonModifier
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
-            // Action Button
             PosActionButton(
                 text = "Charge ${viewModel.formatAmount(state.amountCents)}",
                 onClick = { viewModel.onEvent(ChargeEvent.Charge) },
-                enabled = state.amountCents > 0,
+                enabled = state.amountCents > 0L,
                 containerColor = Color.White,
                 contentColor = Color.Black
             )
