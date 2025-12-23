@@ -5,4 +5,10 @@ sealed interface ChargeEvent {
     data object DeleteLast : ChargeEvent
     data object Clear : ChargeEvent
     data object Charge : ChargeEvent
+    data object Back : ChargeEvent
+    // PIN события
+    data class PinEnterDigit(val digit: Int) : ChargeEvent
+    data object PinDeleteLast : ChargeEvent
+    data object PinClear : ChargeEvent
+    data object PinValidate : ChargeEvent
 }

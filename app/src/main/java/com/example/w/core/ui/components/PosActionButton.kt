@@ -7,6 +7,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,14 +24,15 @@ fun PosActionButton(
     containerColor: Color = Color.White,
     contentColor: Color = Color.Black,
     disabledContainerColor: Color = Color(0xFFBDBDBD),
-    disabledContentColor: Color = Color(0xFF2F2F2F)
+    disabledContentColor: Color = Color(0xFF2F2F2F),
+    loading: Boolean = false
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(64.dp),
-        enabled = enabled,
+        enabled = enabled && !loading,
         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
@@ -39,10 +41,17 @@ fun PosActionButton(
             disabledContentColor = disabledContentColor
         )
     ) {
-        Text(
-            text = text,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        if (loading) {
+            CircularProgressIndicator(
+                color = contentColor,
+                strokeWidth = 3.dp
+            )
+        } else {
+            Text(
+                text = text,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

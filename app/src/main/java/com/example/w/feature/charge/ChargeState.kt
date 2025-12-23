@@ -1,10 +1,11 @@
 package com.example.w.feature.charge
 
 data class ChargeState(
-    /**
-     * Amount in cents.
-     * Example: 1234 -> €12.34
-     */
     val amountCents: Long = 0,
-    val currencySymbol: String = "€"
+    val currencySymbol: String = "€",
+    val isCharging: Boolean = false,
+    val showPaymentPanel: Boolean = false,
+    // Добавлено для PIN-экрана
+    val showPinPanel: Boolean = false,
+    val pin: String = ""
 )
