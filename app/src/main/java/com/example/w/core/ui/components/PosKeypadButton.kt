@@ -27,14 +27,16 @@ fun PosKeypadButton(
     shape: Shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
     backgroundColor: Color = Color.Transparent,
     contentColor: Color = Color.White,
-    fontSize: TextUnit = 32.sp
+    fontSize: TextUnit = 32.sp,
+    enabled: Boolean = true
 ) {
     Surface(
         onClick = onClick,
         modifier = modifier,
         shape = shape,
         color = backgroundColor,
-        contentColor = contentColor
+        contentColor = contentColor,
+        enabled = enabled
     ) {
         Box(
             contentAlignment = Alignment.Center,

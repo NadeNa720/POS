@@ -26,7 +26,7 @@ fun PinPanel(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        // Верх: логотип + заголовок
+        // Верх: логотип, заголовок и точки
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -43,22 +43,17 @@ fun PinPanel(
                 fontFamily = com.example.w.ui.theme.SFPro,
                 textAlign = TextAlign.Center
             )
-            // Убрали PinDots из верхнего блока — теперь они снизу
+            Spacer(modifier = Modifier.height(12.dp))
+            PinDots(pinLength = pin.length)
         }
 
-        // Низ: клавиатура + Validate
+        // Низ: клавиатура + Validate (зафиксированы у нижней границы)
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .navigationBarsPadding() // максимально вниз, но безопасно
-                .padding(bottom = 4.dp),
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Крупные "круглешки" прямо над клавиатурой
-            PinDots(pinLength = pin.length)
-            Spacer(modifier = Modifier.height(16.dp))
-
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -80,44 +75,46 @@ fun PinPanel(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PinKeypadDigit(1, onDigit, buttonModifier)
-                        PinKeypadDigit(2, onDigit, buttonModifier)
-                        PinKeypadDigit(3, onDigit, buttonModifier)
+                        PinKeypadDigit(1, onDigit, buttonModifier, enabled = pin.length < 4)
+                        PinKeypadDigit(2, onDigit, buttonModifier, enabled = pin.length < 4)
+                        PinKeypadDigit(3, onDigit, buttonModifier, enabled = pin.length < 4)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PinKeypadDigit(4, onDigit, buttonModifier)
-                        PinKeypadDigit(5, onDigit, buttonModifier)
-                        PinKeypadDigit(6, onDigit, buttonModifier)
+                        PinKeypadDigit(4, onDigit, buttonModifier, enabled = pin.length < 4)
+                        PinKeypadDigit(5, onDigit, buttonModifier, enabled = pin.length < 4)
+                        PinKeypadDigit(6, onDigit, buttonModifier, enabled = pin.length < 4)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PinKeypadDigit(7, onDigit, buttonModifier)
-                        PinKeypadDigit(8, onDigit, buttonModifier)
-                        PinKeypadDigit(9, onDigit, buttonModifier)
+                        PinKeypadDigit(7, onDigit, buttonModifier, enabled = pin.length < 4)
+                        PinKeypadDigit(8, onDigit, buttonModifier, enabled = pin.length < 4)
+                        PinKeypadDigit(9, onDigit, buttonModifier, enabled = pin.length < 4)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PosKeypadButton(text = "C", onClick = onClear, modifier = buttonModifier)
-                        PinKeypadDigit(0, onDigit, buttonModifier)
-                        PosKeypadButton(text = "⌫", onClick = onDelete, modifier = buttonModifier)
+                        PosKeypadButton(text = "C", onClick = onClear, modifier = buttonModifier, enabled = true)
+                        PinKeypadDigit(0, onDigit, buttonModifier, enabled = pin.length < 4)
+                        PosKeypadButton(text = "⌫", onClick = onDelete, modifier = buttonModifier, enabled = true)
                     }
                 }
             }
 
+            // как на главном: два небольших отступа перед кнопкой
+            Spacer(modifier = Modifier.height(12.dp))
             Spacer(modifier = Modifier.height(12.dp))
 
             PosActionButton(
                 text = "Validate",
                 onClick = onValidate,
                 enabled = pin.length == 4,
-                containerColor = Color(0xFFBDBDBD),
+                containerColor = Color.White,   // белая, когда enabled
                 contentColor = Color.Black,
                 loading = false
             )
@@ -134,7 +131,7 @@ private fun PinDots(pinLength: Int) {
         repeat(4) { index ->
             Box(
                 modifier = Modifier
-                    .size(18.dp) // увеличил размер "круглешков"
+                    .size(18.dp)
                     .background(
                         color = if (index < pinLength) Color.White else Color(0xFF4A4A4A),
                         shape = RoundedCornerShape(50)
@@ -148,11 +145,13 @@ private fun PinDots(pinLength: Int) {
 private fun PinKeypadDigit(
     digit: Int,
     onDigit: (Int) -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    enabled: Boolean = true
 ) {
     PosKeypadButton(
         text = digit.toString(),
-        onClick = { onDigit(digit) },
-        modifier = modifier
+        onClick = { if (enabled) onDigit(digit) },
+        modifier = modifier,
+        enabled = enabled
     )
 }

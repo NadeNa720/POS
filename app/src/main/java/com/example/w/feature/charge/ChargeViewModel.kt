@@ -81,8 +81,24 @@ class ChargeViewModel : ViewModel() {
             }
 
             ChargeEvent.PinValidate -> {
-                // Заглушка: закрываем экран PIN и очищаем PIN.
-                _state.update { it.copy(showPinPanel = false, pin = "") }
+                viewModelScope.launch {
+                    // 1) показываем "Authorizing..."
+                    _state.update { it.copy(showPinPanel = false, isAuthorizing = true, isApproved = false) }
+                    delay(2000)
+                    // 2) авторизация прошла — показываем "Approved"
+                    _state.update { it.copy(isAuthorizing = false, isApproved = true) }
+                    delay(2500)
+                    // 3) закрываем успех и возвращаемся на главный экран
+                    _state.update {
+                        it.copy(
+                            isApproved = false,
+                            pin = "",
+                            amountCents = 0,
+                            showPaymentPanel = false,
+                            showPinPanel = false
+                        )
+                    }
+                }
             }
         }
     }
@@ -93,5 +109,49 @@ class ChargeViewModel : ViewModel() {
         val symbol = _state.value.currencySymbol
         val fractionString = if (fraction < 10) "0$fraction" else "$fraction"
         return "$symbol$whole.$fractionString"
+    }
+
+    fun applyDebugRoute(screen: String?, amountCents: Long?) {
+        _state.update { s ->
+            var n = s
+            if (amountCents != null) {
+                n = n.copy(amountCents = amountCents)
+            }
+            when (screen) {
+                null, "main" -> n.copy(
+                    isCharging = false,
+                    showPaymentPanel = false,
+                    showPinPanel = false,
+                    isAuthorizing = false,
+                    isApproved = false,
+                    pin = ""
+                )
+                "payment" -> n.copy(
+                    showPaymentPanel = true,
+                    showPinPanel = false,
+                    isAuthorizing = false,
+                    isApproved = false
+                )
+                "pin" -> n.copy(
+                    showPaymentPanel = false,
+                    showPinPanel = true,
+                    isAuthorizing = false,
+                    isApproved = false
+                )
+                "auth" -> n.copy(
+                    showPaymentPanel = false,
+                    showPinPanel = false,
+                    isAuthorizing = true,
+                    isApproved = false
+                )
+                "approved" -> n.copy(
+                    showPaymentPanel = false,
+                    showPinPanel = false,
+                    isAuthorizing = false,
+                    isApproved = true
+                )
+                else -> n
+            }
+        }
     }
 }

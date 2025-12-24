@@ -17,9 +17,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun ChargeScreen(
     viewModel: ChargeViewModel = viewModel(),
+    initialScreen: String? = null,
+    initialAmountCents: Long? = null,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(initialScreen, initialAmountCents) {
+        if (initialScreen != null || initialAmountCents != null) {
+            viewModel.applyDebugRoute(initialScreen, initialAmountCents)
+        }
+    }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -35,6 +43,12 @@ fun ChargeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when {
+                state.isAuthorizing -> {
+                    AuthorizingOverlay()
+                }
+                state.isApproved -> {
+                    ApprovedOverlay()
+                }
                 state.showPinPanel -> {
                     PinPanel(
                         pin = state.pin,

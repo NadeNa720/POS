@@ -7,5 +7,7 @@ data class ChargeState(
     val showPaymentPanel: Boolean = false,
     // Добавлено для PIN-экрана
     val showPinPanel: Boolean = false,
-    val pin: String = ""
+    val pin: String = "",
+    val isAuthorizing: Boolean = false,
+    val isApproved: Boolean = false
 )

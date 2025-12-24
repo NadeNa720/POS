@@ -20,7 +20,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             WTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ChargeScreen(modifier = Modifier.padding(innerPadding))
+                    val initialScreen = intent.getStringExtra("screen")
+                    val initialAmount = intent.getLongExtra("amountCents", -1L).takeIf { it >= 0 }
+                    ChargeScreen(
+                        initialScreen = initialScreen,
+                        initialAmountCents = initialAmount,
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
             }
         }
