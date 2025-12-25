@@ -47,7 +47,7 @@ fun ChargeScreen(
                     AuthorizingOverlay()
                 }
                 state.isApproved -> {
-                    ApprovedOverlay()
+                    ApprovedOverlay(syncStatus = state.debugSyncStatus)
                 }
                 state.showPinPanel -> {
                     PinPanel(

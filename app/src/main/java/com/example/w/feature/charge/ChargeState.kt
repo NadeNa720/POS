@@ -9,5 +9,6 @@ data class ChargeState(
     val showPinPanel: Boolean = false,
     val pin: String = "",
     val isAuthorizing: Boolean = false,
-    val isApproved: Boolean = false
+    val isApproved: Boolean = false,
+    val debugSyncStatus: String = "" // "Sending to Cloud...", "Sent!", "Error: ..."
 )

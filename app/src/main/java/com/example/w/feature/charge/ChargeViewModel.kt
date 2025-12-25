@@ -85,8 +85,26 @@ class ChargeViewModel : ViewModel() {
                     // 1) показываем "Authorizing..."
                     _state.update { it.copy(showPinPanel = false, isAuthorizing = true, isApproved = false) }
                     delay(2000)
+                    
                     // 2) авторизация прошла — показываем "Approved"
-                    _state.update { it.copy(isAuthorizing = false, isApproved = true) }
+                    val currentAmount = _state.value.amountCents
+                    _state.update { it.copy(isAuthorizing = false, isApproved = true, debugSyncStatus = "Sending to Cloud...") }
+
+                    // Save transaction to Firebase
+                    try {
+                        val transaction = com.example.w.core.data.model.Transaction(
+                            id = java.util.UUID.randomUUID().toString(),
+                            amount = currentAmount,
+                            timestamp = System.currentTimeMillis(),
+                            status = "SUCCESS"
+                        )
+                        com.example.w.core.data.repository.TransactionRepository().saveTransaction(transaction)
+                        _state.update { it.copy(debugSyncStatus = "Sent to Cloud!") }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        _state.update { it.copy(debugSyncStatus = "Error: ${e.message}") }
+                    }
+
                     delay(2500)
                     // 3) закрываем успех и возвращаемся на главный экран
                     _state.update {

@@ -14,8 +14,18 @@ import com.example.w.feature.charge.ChargeScreen
 import com.example.w.ui.theme.WTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.google.firebase.FirebaseApp.initializeApp(this)
+        com.google.firebase.firestore.FirebaseFirestore.setLoggingEnabled(true)
+
+        // DISABLE Offline Persistence to debug connection
+        val settings = com.google.firebase.firestore.FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(false)
+            .build()
+        com.google.firebase.firestore.FirebaseFirestore.getInstance().firestoreSettings = settings
+
         enableEdgeToEdge()
         setContent {
             WTheme {

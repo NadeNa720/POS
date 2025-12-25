@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.app
 
 @Composable
-fun ApprovedOverlay() {
+fun ApprovedOverlay(syncStatus: String = "") {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.align(Alignment.Center),
@@ -61,6 +63,16 @@ fun ApprovedOverlay() {
                 textAlign = TextAlign.Center,
                 fontFamily = com.example.w.ui.theme.SFPro
             )
+
+            if (syncStatus.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = syncStatus,
+                    color = Color.Yellow,
+                    fontSize = 16.sp,
+                    fontFamily = com.example.w.ui.theme.SFPro
+                )
+            }
         }
     }
 }
