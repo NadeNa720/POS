@@ -141,6 +141,26 @@ class ChargeViewModel : ViewModel() {
             is ChargeEvent.SettingsChangeLanguage -> {
                 _state.update { it.copy(languageCode = event.code) }
             }
+            is ChargeEvent.SettingsChangeCurrency -> {
+                _state.update { it.copy(currencySymbol = event.symbol) }
+            }
+            ChargeEvent.Logout -> {
+                _state.update {
+                    it.copy(
+                        isCharging = false,
+                        showPaymentPanel = false,
+                        showPinPanel = false,
+                        isAuthorizing = false,
+                        isApproved = false,
+                        isDeclined = false,
+                        isDeclinedInsufficientFunds = false,
+                        isDeclinedServerError = false,
+                        showSettingsPanel = false,
+                        pin = "",
+                        amountCents = 0
+                    )
+                }
+            }
         }
     }
 

@@ -45,7 +45,9 @@ fun ChargeScreen(
                 SettingsPanel(
                     language = state.languageCode,
                     onLanguageSelect = { code -> viewModel.onEvent(ChargeEvent.SettingsChangeLanguage(code)) },
+                    onCurrencySelect = { symbol -> viewModel.onEvent(ChargeEvent.SettingsChangeCurrency(symbol)) },
                     onClose = { viewModel.onEvent(ChargeEvent.SettingsClose) },
+                    onLogout = { viewModel.onEvent(ChargeEvent.Logout) },
                     modifier = Modifier.fillMaxSize()
                 )
             }

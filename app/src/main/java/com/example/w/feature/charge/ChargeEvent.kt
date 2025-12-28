@@ -15,4 +15,6 @@ sealed class ChargeEvent {
     object SettingsOpen : ChargeEvent()
     object SettingsClose : ChargeEvent()
     data class SettingsChangeLanguage(val code: String) : ChargeEvent()
+    data class SettingsChangeCurrency(val symbol: String) : ChargeEvent()
+    object Logout : ChargeEvent()
 }

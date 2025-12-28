@@ -31,14 +31,31 @@ private enum class SettingsSection {
     Language, Brightness, Currency, History
 }
 
+
 @Composable
 fun SettingsPanel(
     language: String,
     onLanguageSelect: (String) -> Unit,
+    onCurrencySelect: (String) -> Unit, // New callback
     onClose: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedSection by remember { mutableStateOf<SettingsSection?>(null) }
+
+    // Fake history data
+    val historyItems = remember {
+        listOf(
+            "Payment #1234 - approved",
+            "Payment #1235 - declined",
+            "Payment #1236 - approved",
+            "Payment #1237 - approved",
+            "Payment #1238 - approved"
+        )
+    }
+
+    // Local state for brightness slider (simulated)
+    var brightness by remember { androidx.compose.runtime.mutableFloatStateOf(0.5f) }
 
     Column(modifier = modifier.fillMaxSize()) {
         // Верхняя панель с динамическим заголовком
@@ -171,7 +188,7 @@ fun SettingsPanel(
                                 modifier = Modifier.width(cellW).height(cellH),
                                 backgroundColor = Color.Red
                             ) {
-                                onClose()
+                                onLogout()
                             }
                         }
                     }
@@ -182,22 +199,80 @@ fun SettingsPanel(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                contentAlignment = Alignment.Center
+                    .weight(1f)
+                    .background(Color(0xFF161616))
             ) {
-                selectedSection?.let { section ->
-                    val title = when (section) {
-                        SettingsSection.Language -> "Language"
-                        SettingsSection.Brightness -> "Brightness"
-                        SettingsSection.Currency -> "Currency"
-                        SettingsSection.History -> "History"
+                when (selectedSection) {
+                    SettingsSection.History -> {
+                        androidx.compose.foundation.lazy.LazyColumn(
+                            modifier = Modifier.fillMaxSize().padding(16.dp)
+                        ) {
+                            items(historyItems.size) { index ->
+                                val item = historyItems[index]
+                                Text(
+                                    text = item,
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(vertical = 12.dp)
+                                )
+                                androidx.compose.material3.HorizontalDivider(color = Color.DarkGray)
+                            }
+                        }
                     }
-                    Text(
-                        text = title,
-                        color = Color.White,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    SettingsSection.Language -> {
+                        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                            val languages = listOf("English" to "EN", "Deutsch" to "DE", "Русский" to "RU")
+                            languages.forEach { (name, code) ->
+                                Text(
+                                    text = name,
+                                    color = if (code == language) Color.Cyan else Color.White,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onLanguageSelect(code) }
+                                        .padding(vertical = 16.dp)
+                                )
+                                androidx.compose.material3.HorizontalDivider(color = Color.DarkGray)
+                            }
+                        }
+                    }
+                    SettingsSection.Brightness -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Screen Brightness",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                            androidx.compose.material3.Slider(
+                                value = brightness,
+                                onValueChange = { brightness = it },
+                                modifier = Modifier.padding(horizontal = 32.dp)
+                            )
+                        }
+                    }
+                    SettingsSection.Currency -> {
+                        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                            val currencies = listOf("EUR" to "€", "USD" to "$", "GBP" to "£")
+                            currencies.forEach { (name, symbol) ->
+                                Text(
+                                    text = "$name ($symbol)",
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onCurrencySelect(symbol) }
+                                        .padding(vertical = 16.dp)
+                                )
+                                androidx.compose.material3.HorizontalDivider(color = Color.DarkGray)
+                            }
+                        }
+                    }
+                    null -> {}
                 }
             }
         }
