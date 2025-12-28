@@ -10,5 +10,11 @@ data class ChargeState(
     val pin: String = "",
     val isAuthorizing: Boolean = false,
     val isApproved: Boolean = false,
-    val debugSyncStatus: String = "" // "Sending to Cloud...", "Sent!", "Error: ..."
+    val debugSyncStatus: String = "", // "Sending to Cloud...", "Sent!", "Error: ..."
+    val showSettingsPanel: Boolean = false,
+    val languageCode: String = "EN",
+    val isDeclined: Boolean = false,
+    // Новые флаги для двух разных окон "Declined"
+    val isDeclinedInsufficientFunds: Boolean = false,
+    val isDeclinedServerError: Boolean = false
 )

@@ -3,11 +3,11 @@ package com.example.w.feature.charge
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class ChargeViewModel : ViewModel() {
 
@@ -82,13 +82,12 @@ class ChargeViewModel : ViewModel() {
 
             ChargeEvent.PinValidate -> {
                 viewModelScope.launch {
-                    // 1) показываем "Authorizing..."
-                    _state.update { it.copy(showPinPanel = false, isAuthorizing = true, isApproved = false) }
+                    _state.update { it.copy(showPinPanel = false, isAuthorizing = true, isApproved = false, isDeclined = false) }
                     delay(2000)
-                    
+
                     // 2) авторизация прошла — показываем "Approved"
                     val currentAmount = _state.value.amountCents
-                    _state.update { it.copy(isAuthorizing = false, isApproved = true, debugSyncStatus = "Sending to Cloud...") }
+                    _state.update { it.copy(isAuthorizing = false, isApproved = true, isDeclined = false, debugSyncStatus = "Sending to Cloud...") }
 
                     // Save transaction to Firebase
                     try {
@@ -104,12 +103,11 @@ class ChargeViewModel : ViewModel() {
                         e.printStackTrace()
                         _state.update { it.copy(debugSyncStatus = "Error: ${e.message}") }
                     }
-
                     delay(2500)
-                    // 3) закрываем успех и возвращаемся на главный экран
                     _state.update {
                         it.copy(
                             isApproved = false,
+                            isDeclined = false,
                             pin = "",
                             amountCents = 0,
                             showPaymentPanel = false,
@@ -117,6 +115,31 @@ class ChargeViewModel : ViewModel() {
                         )
                     }
                 }
+            }
+            ChargeEvent.PinDecline -> {
+                viewModelScope.launch {
+                    _state.update { it.copy(showPinPanel = false, isAuthorizing = false, isApproved = false, isDeclined = true) }
+                    delay(2500)
+                    _state.update {
+                        it.copy(
+                            isApproved = false,
+                            isDeclined = false,
+                            pin = "",
+                            amountCents = 0,
+                            showPaymentPanel = false,
+                            showPinPanel = false
+                        )
+                    }
+                }
+            }
+            ChargeEvent.SettingsOpen -> {
+                _state.update { it.copy(showSettingsPanel = true) }
+            }
+            ChargeEvent.SettingsClose -> {
+                _state.update { it.copy(showSettingsPanel = false) }
+            }
+            is ChargeEvent.SettingsChangeLanguage -> {
+                _state.update { it.copy(languageCode = event.code) }
             }
         }
     }
@@ -142,31 +165,73 @@ class ChargeViewModel : ViewModel() {
                     showPinPanel = false,
                     isAuthorizing = false,
                     isApproved = false,
+                    isDeclined = false,
+                    isDeclinedInsufficientFunds = false,
+                    isDeclinedServerError = false,
                     pin = ""
                 )
                 "payment" -> n.copy(
                     showPaymentPanel = true,
                     showPinPanel = false,
                     isAuthorizing = false,
-                    isApproved = false
+                    isApproved = false,
+                    isDeclined = false,
+                    isDeclinedInsufficientFunds = false,
+                    isDeclinedServerError = false
                 )
                 "pin" -> n.copy(
                     showPaymentPanel = false,
                     showPinPanel = true,
                     isAuthorizing = false,
-                    isApproved = false
+                    isApproved = false,
+                    isDeclined = false,
+                    isDeclinedInsufficientFunds = false,
+                    isDeclinedServerError = false
                 )
                 "auth" -> n.copy(
                     showPaymentPanel = false,
                     showPinPanel = false,
                     isAuthorizing = true,
-                    isApproved = false
+                    isApproved = false,
+                    isDeclined = false,
+                    isDeclinedInsufficientFunds = false,
+                    isDeclinedServerError = false
                 )
                 "approved" -> n.copy(
                     showPaymentPanel = false,
                     showPinPanel = false,
                     isAuthorizing = false,
-                    isApproved = true
+                    isApproved = true,
+                    isDeclined = false,
+                    isDeclinedInsufficientFunds = false,
+                    isDeclinedServerError = false
+                )
+                "declined" -> n.copy( // общий вариант, если останется
+                    showPaymentPanel = false,
+                    showPinPanel = false,
+                    isAuthorizing = false,
+                    isApproved = false,
+                    isDeclined = true,
+                    isDeclinedInsufficientFunds = false,
+                    isDeclinedServerError = false
+                )
+                "declined_insufficient" -> n.copy(
+                    showPaymentPanel = false,
+                    showPinPanel = false,
+                    isAuthorizing = false,
+                    isApproved = false,
+                    isDeclined = false,
+                    isDeclinedInsufficientFunds = true,
+                    isDeclinedServerError = false
+                )
+                "declined_server" -> n.copy(
+                    showPaymentPanel = false,
+                    showPinPanel = false,
+                    isAuthorizing = false,
+                    isApproved = false,
+                    isDeclined = false,
+                    isDeclinedInsufficientFunds = false,
+                    isDeclinedServerError = true
                 )
                 else -> n
             }

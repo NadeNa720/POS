@@ -1,14 +1,18 @@
 package com.example.w.feature.charge
 
-sealed interface ChargeEvent {
-    data class EnterDigit(val digit: Int) : ChargeEvent
-    data object DeleteLast : ChargeEvent
-    data object Clear : ChargeEvent
-    data object Charge : ChargeEvent
-    data object Back : ChargeEvent
+sealed class ChargeEvent {
+    data class EnterDigit(val digit: Int) : ChargeEvent()
+    object DeleteLast : ChargeEvent()
+    object Clear : ChargeEvent()
+    object Charge : ChargeEvent()
+    object Back : ChargeEvent()
     // PIN события
-    data class PinEnterDigit(val digit: Int) : ChargeEvent
-    data object PinDeleteLast : ChargeEvent
-    data object PinClear : ChargeEvent
-    data object PinValidate : ChargeEvent
+    data class PinEnterDigit(val digit: Int) : ChargeEvent()
+    object PinDeleteLast : ChargeEvent()
+    object PinClear : ChargeEvent()
+    object PinValidate : ChargeEvent()
+    object PinDecline : ChargeEvent()
+    object SettingsOpen : ChargeEvent()
+    object SettingsClose : ChargeEvent()
+    data class SettingsChangeLanguage(val code: String) : ChargeEvent()
 }

@@ -1,15 +1,18 @@
 package com.example.w.feature.charge
 
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,9 +24,9 @@ fun ChargeScreen(
     initialAmountCents: Long? = null,
     modifier: Modifier = Modifier
 ) {
-    val state by viewModel.state.collectAsState()
+    val state: ChargeState by viewModel.state.collectAsState()
 
-    androidx.compose.runtime.LaunchedEffect(initialScreen, initialAmountCents) {
+    LaunchedEffect(Unit) {
         if (initialScreen != null || initialAmountCents != null) {
             viewModel.applyDebugRoute(initialScreen, initialAmountCents)
         }
@@ -36,42 +39,66 @@ fun ChargeScreen(
     ) {
         val sidePadding = 12.dp
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = sidePadding, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when {
-                state.isAuthorizing -> {
-                    AuthorizingOverlay()
-                }
-                state.isApproved -> {
-                    ApprovedOverlay(syncStatus = state.debugSyncStatus)
-                }
-                state.showPinPanel -> {
-                    PinPanel(
-                        pin = state.pin,
-                        onDigit = { d -> viewModel.onEvent(ChargeEvent.PinEnterDigit(d)) },
-                        onDelete = { viewModel.onEvent(ChargeEvent.PinDeleteLast) },
-                        onClear = { viewModel.onEvent(ChargeEvent.PinClear) },
-                        onValidate = { viewModel.onEvent(ChargeEvent.PinValidate) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
+        when {
+            // Если открыт Settings — показываем его поверх
+            state.showSettingsPanel -> {
+                SettingsPanel(
+                    language = state.languageCode,
+                    onLanguageSelect = { code -> viewModel.onEvent(ChargeEvent.SettingsChangeLanguage(code)) },
+                    onClose = { viewModel.onEvent(ChargeEvent.SettingsClose) },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            state.isAuthorizing -> {
+                AuthorizingOverlay()
+            }
+            state.isApproved -> {
+                ApprovedOverlay(syncStatus = state.debugSyncStatus)
+            }
+            // Платёжная панель после нажатия Charge
+            state.showPaymentPanel -> {
+                PaymentPanel(
+                    amountText = viewModel.formatAmount(state.amountCents),
+                    onBackClick = { viewModel.onEvent(ChargeEvent.Back) },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            // Экран ввода PIN
+            state.showPinPanel -> {
+                PinPanel(
+                    pin = state.pin,
+                    onDigit = { d -> viewModel.onEvent(ChargeEvent.PinEnterDigit(d)) },
+                    onDelete = { viewModel.onEvent(ChargeEvent.PinDeleteLast) },
+                    onClear = { viewModel.onEvent(ChargeEvent.PinClear) },
+                    onValidate = { viewModel.onEvent(ChargeEvent.PinValidate) },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            // Два отдельных окна отказа
+            state.isDeclinedInsufficientFunds -> {
+                DeclinedInsufficientFundsOverlay()
+            }
+            state.isDeclinedServerError -> {
+                DeclinedServerErrorOverlay()
+            }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = sidePadding, vertical = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    HeaderLogo(
+                        trailing = {
+                            Text(
+                                text = "Settings",
+                                color = Color.White,
+                                modifier = Modifier
+                                    .padding(start = 8.dp)
+                                    .clickable { viewModel.onEvent(ChargeEvent.SettingsOpen) }
+                            )
+                        }
                     )
-                }
-                state.showPaymentPanel -> {
-                    PaymentPanel(
-                        amountText = viewModel.formatAmount(state.amountCents),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        onBackClick = { viewModel.onEvent(ChargeEvent.Back) }
-                    )
-                }
-                else -> {
-                    HeaderLogo()
                     AmountText(
                         text = viewModel.formatAmount(state.amountCents),
                         isZero = state.amountCents == 0L,
@@ -83,9 +110,7 @@ fun ChargeScreen(
                         text = "Charge ${viewModel.formatAmount(state.amountCents)}",
                         enabled = state.amountCents > 0L,
                         loading = state.isCharging
-                    ) {
-                        viewModel.onEvent(ChargeEvent.Charge)
-                    }
+                    ) { viewModel.onEvent(ChargeEvent.Charge) }
                 }
             }
         }

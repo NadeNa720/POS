@@ -10,6 +10,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.ui.text.TextStyle
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -53,6 +55,11 @@ fun WTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = {
+            // Применяем Outfit (SFPro) как дефолтный шрифт для всего контента
+            ProvideTextStyle(TextStyle.Default.copy(fontFamily = SFPro)) {
+                content()
+            }
+        }
     )
 }

@@ -17,15 +17,15 @@ val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = SFPro,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
         letterSpacing = (-0.2).sp
     ),
     displayLarge = TextStyle(
         fontFamily = SFPro,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 48.sp,
-        lineHeight = 52.sp,
+        fontSize = 56.sp,
+        lineHeight = 60.sp,
         letterSpacing = (-0.25).sp,
         fontFeatureSettings = "tnum,lnum"
     )
